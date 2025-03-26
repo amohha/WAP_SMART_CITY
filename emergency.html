@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Emergency Report - Smart City Platform</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="emergency.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+</head>
+<body>
+  <div class="container emergency-container">
+    <header>
+      <div class="logo">
+        <i class="fas fa-city"></i>
+        <span>Smart City Platform</span>
+      </div>
+      <div class="subtitle">Emergency Reporting System</div>
+    </header>
+
+    <div class="emergency-content">
+      <div class="card emergency-card">
+        <div class="card-header emergency-header">
+          <h2><i class="fas fa-exclamation-triangle"></i> Report Emergency</h2>
+          <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+        </div>
+        <div class="card-content">
+          <form id="emergencyReportForm">
+            <div class="form-group">
+              <label for="reporterName">Your Name</label>
+              <input type="text" id="reporterName" placeholder="Enter your name" required>
+            </div>
+            
+            <div class="form-group">
+              <label for="emergencyType">Emergency Type</label>
+              <select id="emergencyType" required>
+                <option value="" disabled selected>Select emergency type</option>
+                <option value="medical">Medical Emergency</option>
+                <option value="fire">Fire</option>
+                <option value="traffic">Traffic Accident</option>
+                <option value="police">Police Emergency</option>
+                <option value="infrastructure">Infrastructure Issue</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            
+            <div class="form-group location-group">
+              <label for="emergencyLocation">Location</label>
+              <div class="location-input-group">
+                <input type="text" id="emergencyLocation" placeholder="Enter location or use current location" required>
+                <button type="button" id="useLocationBtn"><i class="fas fa-location-arrow"></i></button>
+              </div>
+              <div id="locationMap"></div>
+            </div>
+            
+            <div class="form-group">
+              <label for="emergencyDescription">Description</label>
+              <textarea id="emergencyDescription" placeholder="Describe the emergency situation in detail" rows="4" required></textarea>
+            </div>
+            
+            <div class="form-group severity-group">
+              <label>Severity Level</label>
+              <div class="severity-selector">
+                <input type="radio" id="low" name="severity" value="low">
+                <label for="low" class="severity-label low">Low</label>
+                
+                <input type="radio" id="medium" name="severity" value="medium" checked>
+                <label for="medium" class="severity-label medium">Medium</label>
+                
+                <input type="radio" id="high" name="severity" value="high">
+                <label for="high" class="severity-label high">High</label>
+              </div>
+            </div>
+            
+            <div class="form-actions">
+              <button type="submit" id="submitEmergency" class="submit-btn">
+                <i class="fas fa-paper-plane"></i> Submit Report
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+      
+      <div class="info-panel">
+        <div class="emergency-info">
+          <h3><i class="fas fa-info-circle"></i> Emergency Response Info</h3>
+          <p>Use this form to report emergencies within the city. Your report will be immediately forwarded to the appropriate emergency services.</p>
+          <ul>
+            <li><i class="fas fa-phone"></i> Emergency Hotline: <strong>911</strong></li>
+            <li><i class="fas fa-ambulance"></i> Ambulance: <strong>102</strong></li>
+            <li><i class="fas fa-fire-extinguisher"></i> Fire Department: <strong>101</strong></li>
+            <li><i class="fas fa-shield-alt"></i> Police: <strong>100</strong></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="emergency.js"></script>
+</body>
+</html> 

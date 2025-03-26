@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weather Monitoring - Smart City Platform</title>
+  <style>
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f8f9fa;
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    
+    .container {
+      max-width: 600px;
+      padding: 30px;
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+    
+    .logo {
+      font-size: 24px;
+      font-weight: 700;
+      color: #3b82f6;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    
+    .logo i {
+      font-size: 28px;
+    }
+    
+    .loading {
+      margin: 20px 0;
+      padding: 20px;
+      text-align: center;
+      color: #6b7280;
+    }
+    
+    .error {
+      color: #ef4444;
+      background-color: #fee2e2;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 20px 0;
+    }
+    
+    .command {
+      background-color: #f3f4f6;
+      padding: 12px;
+      border-radius: 6px;
+      font-family: monospace;
+      margin: 15px 0;
+      text-align: left;
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="logo">
+      <i class="fas fa-city"></i>
+      <span>Smart City Platform</span>
+    </div>
+    <h2>Weather Monitoring System</h2>
+    <div id="weather-display" class="loading">Connecting to Twilio Weather Service...</div>
+  </div>
+
+  <script>
+    window.onload = function() {
+      const weatherDisplay = document.getElementById('weather-display');
+      
+      // Check if Twilio server is running
+      fetch('http://localhost:3000/weather/Bhubaneswar')
+        .then(response => {
+          if (response.ok) {
+            // Redirect to the Twilio weather page
+            window.location.href = 'http://localhost:3000/public/weather.html';
+          } else {
+            throw new Error(`Server responded with ${response.status}`);
+          }
+        })
+        .catch(error => {
+          console.error('Error connecting to Twilio server:', error);
+          weatherDisplay.innerHTML = `
+            <div class="error">
+              <p><strong>Unable to connect to Twilio Weather Service</strong></p>
+              <p>Please make sure the Twilio server is running.</p>
+              <p>To start the server, run the following command in the terminal:</p>
+              <div class="command">cd C:\\Users\\hp\\Desktop\\priyanka\\WAP-AI\\twilio<br>node server.js</div>
+              <p>Then refresh this page.</p>
+            </div>
+          `;
+        });
+    };
+  </script>
+</body>
+</html> 

@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Alert System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        h1, h2 {
+            color: #333;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #666;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        button.remove {
+            background-color: #f44336;
+        }
+        button.refresh {
+            background-color: #2196F3;
+            width: auto;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        #status {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+        .success {
+            background-color: #dff0d8;
+            color: #3c763d;
+        }
+        .error {
+            background-color: #f2dede;
+            color: #a94442;
+        }
+        #monitoredLocations {
+            margin-top: 20px;
+        }
+        .location-item {
+            background-color: #f8f9fa;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
+        .location-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .weather-data {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .weather-item {
+            background-color: white;
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .weather-item h3 {
+            margin: 0;
+            color: #666;
+            font-size: 0.9em;
+        }
+        .weather-value {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #333;
+            margin: 5px 0;
+        }
+        .loading {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+        }
+        .weather-description {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #e3f2fd;
+            border-radius: 4px;
+            color: #1976d2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Weather Alert System</h1>
+        
+        <div class="container">
+            <h2>Set Up Weather Monitoring</h2>
+            <form id="monitorForm">
+                <div class="form-group">
+                    <label for="location">Location:</label>
+                    <input type="text" id="location" name="location" required placeholder="City,State or City,Country">
+                </div>
+                <div class="form-group">
+                    <label>Static Receivers:</label>
+                    <div id="staticReceivers" style="background: #f8f9fa; padding: 10px; border-radius: 4px;">
+                        <ul style="margin: 0; padding-left: 20px;">
+                            <li>+917735601483</li>
+                            <li>+917735601484</li>
+                            <li>+917735601485</li>
+                            <li>+917735601486</li>
+                            <li>+917735601487</li>
+                        </ul>
+                    </div>
+                </div>
+                <button type="submit">Send Weather Updates to All</button>
+            </form>
+            <div id="status"></div>
+        </div>
+
+        <div class="container">
+            <h2>Monitored Locations</h2>
+            <div id="monitoredLocations"></div>
+        </div>
+    </div>
+
+    <script>
+        // Store monitored locations in memory
+        let monitoredLocations = new Map();
+
+        // Function to format temperature
+        function formatTemp(temp) {
+            return `${temp}°C`;
+        }
+
+        // Function to format time
+        function formatTime(datetime) {
+            return new Date(datetime).toLocaleTimeString();
+        }
+
+        // Function to get weather icon
+        function getWeatherIcon(conditions) {
+            const icons = {
+                'clear': '☀️',
+                'sunny': '☀️',
+                'partly cloudy': '⛅',
+                'cloudy': '☁️',
+                'overcast': '☁️',
+                'rain': '🌧️',
+                'snow': '❄️',
+                'thunderstorm': '⛈️',
+                'fog': '🌫️'
+            };
+            const condition = conditions?.toLowerCase() || '';
+            return icons[condition] || '🌡️';
+        }
+
+        // Function to fetch weather data
+        async function fetchWeatherData(location) {
+            try {
+                const response = await fetch(`/weather/${encodeURIComponent(location)}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    throw new Error('Server returned non-JSON response');
+                }
+                const data = await response.json();
+                if (!data.success) {
+                    throw new Error(data.error || 'Failed to fetch weather data');
+                }
+                return data.data;
+            } catch (error) {
+                console.error('Error fetching weather:', error);
+                throw new Error(error.message || 'Failed to fetch weather data');
+            }
+        }
+
+        // Function to update weather display
+        function updateWeatherDisplay(container, weatherData) {
+            const current = weatherData.current;
+            const weatherHtml = `
+                <div class="weather-description">
+                    ${getWeatherIcon(current.conditions)} ${weatherData.description}
+                </div>
+                <div class="weather-data">
+                    <div class="weather-item">
+                        <h3>Temperature</h3>
+                        <div class="weather-value">${formatTemp(current.temp)}</div>
+                    </div>
+                    <div class="weather-item">
+                        <h3>Feels Like</h3>
+                        <div class="weather-value">${formatTemp(current.feelslike)}</div>
+                    </div>
+                    <div class="weather-item">
+                        <h3>Humidity</h3>
+                        <div class="weather-value">${current.humidity}%</div>
+                    </div>
+                    <div class="weather-item">
+                        <h3>Wind Speed</h3>
+                        <div class="weather-value">${current.windspeed} km/h</div>
+                    </div>
+                    <div class="weather-item">
+                        <h3>Precipitation</h3>
+                        <div class="weather-value">${current.precip} mm</div>
+                    </div>
+                    <div class="weather-item">
+                        <h3>Cloud Cover</h3>
+                        <div class="weather-value">${current.cloudcover}%</div>
+                    </div>
+                </div>
+                <div style="text-align: right; margin-top: 10px; color: #666; font-size: 0.8em;">
+                    Last updated: ${formatTime(current.datetime)}
+                </div>
+            `;
+            container.innerHTML = weatherHtml;
+        }
+
+        // Function to update the monitored locations display
+        async function updateMonitoredLocationsDisplay() {
+            const container = document.getElementById('monitoredLocations');
+            container.innerHTML = '';
+
+            if (monitoredLocations.size === 0) {
+                container.innerHTML = '<p>No locations currently monitored.</p>';
+                return;
+            }
+
+            for (const [location, phoneNumber] of monitoredLocations) {
+                const div = document.createElement('div');
+                div.className = 'location-item';
+                
+                // Create the location header
+                const headerDiv = document.createElement('div');
+                headerDiv.className = 'location-header';
+                headerDiv.innerHTML = `
+                    <div>
+                        <strong>${location}</strong><br>
+                        <small>${phoneNumber}</small>
+                    </div>
+                    <div>
+                        <button class="refresh" onclick="refreshWeather('${location}')">🔄 Refresh</button>
+                        <button class="remove" onclick="removeLocation('${location}')">Remove</button>
+                    </div>
+                `;
+                div.appendChild(headerDiv);
+
+                // Create weather container
+                const weatherDiv = document.createElement('div');
+                weatherDiv.id = `weather-${location.replace(/[^a-zA-Z0-9]/g, '-')}`;
+                weatherDiv.innerHTML = '<div class="loading">Loading weather data...</div>';
+                div.appendChild(weatherDiv);
+
+                container.appendChild(div);
+
+                // Fetch weather data
+                try {
+                    const weatherData = await fetchWeatherData(location);
+                    updateWeatherDisplay(weatherDiv, weatherData);
+                } catch (error) {
+                    weatherDiv.innerHTML = `<div class="error">Failed to load weather data: ${error.message}</div>`;
+                }
+            }
+        }
+
+        // Function to refresh weather for a specific location
+        async function refreshWeather(location) {
+            const weatherDiv = document.getElementById(`weather-${location.replace(/[^a-zA-Z0-9]/g, '-')}`);
+            weatherDiv.innerHTML = '<div class="loading">Refreshing weather data...</div>';
+            
+            try {
+                const weatherData = await fetchWeatherData(location);
+                updateWeatherDisplay(weatherDiv, weatherData);
+            } catch (error) {
+                weatherDiv.innerHTML = `<div class="error">Failed to refresh weather data: ${error.message}</div>`;
+            }
+        }
+
+        // Function to show status message
+        function showStatus(message, isError = false) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.style.display = 'block';
+            statusDiv.className = isError ? 'error' : 'success';
+            statusDiv.textContent = message;
+            setTimeout(() => {
+                statusDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        // Function to remove a monitored location
+        async function removeLocation(location) {
+            try {
+                const response = await fetch('/remove-monitoring', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ location }),
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    monitoredLocations.delete(location);
+                    await updateMonitoredLocationsDisplay();
+                    showStatus('Location removed successfully');
+                } else {
+                    showStatus(data.error || 'Failed to remove location', true);
+                }
+            } catch (error) {
+                showStatus('Error removing location: ' + error.message, true);
+            }
+        }
+
+        // Handle form submission
+        document.getElementById('monitorForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const location = document.getElementById('location').value;
+            
+            try {
+                // Disable form while submitting
+                const submitButton = e.target.querySelector('button[type="submit"]');
+                submitButton.disabled = true;
+                submitButton.textContent = 'Sending...';
+
+                // First, test the weather monitoring
+                const monitorResponse = await fetch('/monitor-weather', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ location }),
+                });
+
+                if (!monitorResponse.ok) {
+                    throw new Error(`HTTP error! status: ${monitorResponse.status}`);
+                }
+
+                const contentType = monitorResponse.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    throw new Error('Server returned non-JSON response');
+                }
+
+                const monitorData = await monitorResponse.json();
+                
+                if (monitorData.success) {
+                    // If successful, set up continuous monitoring
+                    const setupResponse = await fetch('/setup-monitoring', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ location }),
+                    });
+
+                    if (!setupResponse.ok) {
+                        throw new Error(`HTTP error! status: ${setupResponse.status}`);
+                    }
+
+                    const setupData = await setupResponse.json();
+                    
+                    if (setupData.success) {
+                        monitoredLocations.set(location, 'Multiple Recipients');
+                        await updateMonitoredLocationsDisplay();
+                        showStatus(`Weather information has been sent to all receivers! You will receive alerts when weather conditions change.`);
+                        document.getElementById('monitorForm').reset();
+                    } else {
+                        showStatus(setupData.error || 'Failed to set up monitoring. Please try again.', true);
+                    }
+                } else {
+                    showStatus(monitorData.error || 'Failed to verify weather data. Please check the location and try again.', true);
+                }
+            } catch (error) {
+                console.error('Form submission error:', error);
+                showStatus('Error: ' + error.message, true);
+            } finally {
+                // Re-enable form
+                const submitButton = e.target.querySelector('button[type="submit"]');
+                submitButton.disabled = false;
+                submitButton.textContent = 'Send Weather Updates to All';
+            }
+        });
+
+        // Initialize the display
+        updateMonitoredLocationsDisplay();
+    </script>
+</body>
+</html> 

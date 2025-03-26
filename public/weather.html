@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weather Monitoring - Smart City Platform</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Weather Page Styles */
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f8f9fa;
+      color: #333;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 24px;
+      font-weight: 700;
+      color: #3b82f6;
+    }
+    
+    .logo i {
+      font-size: 28px;
+    }
+    
+    .subtitle {
+      font-size: 16px;
+      color: #6b7280;
+      margin-top: 5px;
+    }
+    
+    .nav-actions {
+      display: flex;
+      gap: 15px;
+    }
+    
+    .back-btn {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      text-decoration: none;
+      color: #4b5563;
+      font-weight: 500;
+      padding: 8px 16px;
+      border-radius: 6px;
+      background-color: #f3f4f6;
+      transition: background-color 0.2s;
+    }
+    
+    .back-btn:hover {
+      background-color: #e5e7eb;
+    }
+    
+    .weather-content {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    
+    .card {
+      background-color: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+      margin-bottom: 20px;
+      width: 100%;
+    }
+    
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 20px;
+      background-color: #f9fafb;
+      border-bottom: 1px solid #f3f4f6;
+    }
+    
+    .card-header h2, .card-header h3 {
+      margin: 0;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .card-content {
+      padding: 20px;
+    }
+    
+    .weather-main {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+    
+    .weather-temp {
+      font-size: 48px;
+      font-weight: 700;
+    }
+    
+    .weather-condition {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .weather-condition i {
+      font-size: 48px;
+      color: #3b82f6;
+    }
+    
+    .weather-details {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+    }
+    
+    @media (max-width: 768px) {
+      .weather-details {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    
+    .weather-detail {
+      text-align: center;
+    }
+    
+    .location-form {
+      margin-top: 20px;
+      display: flex;
+      gap: 10px;
+    }
+    
+    .location-input {
+      flex: 1;
+      padding: 10px 15px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+    
+    .search-btn {
+      background-color: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 20px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    
+    .search-btn:hover {
+      background-color: #2563eb;
+    }
+    
+    .notification-form {
+      margin-top: 20px;
+    }
+    
+    .form-group {
+      margin-bottom: 15px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+    
+    .form-group input[type="tel"] {
+      width: 100%;
+      padding: 10px 15px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+    
+    .checkbox-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .submit-btn {
+      background-color: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 12px 24px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 15px;
+    }
+    
+    .submit-btn:hover {
+      background-color: #2563eb;
+    }
+    
+    .twilio-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background-color: #F22F46;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    
+    .location-display {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 16px;
+      color: #4b5563;
+      background-color: #f3f4f6;
+      padding: 6px 12px;
+      border-radius: 6px;
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 20px;
+      color: #6b7280;
+    }
+    
+    .error {
+      color: #ef4444;
+      padding: 15px;
+      background-color: #fee2e2;
+      border-radius: 6px;
+      margin-bottom: 15px;
+    }
+    
+    .success {
+      color: #10b981;
+      padding: 15px;
+      background-color: #d1fae5;
+      border-radius: 6px;
+      margin-bottom: 15px;
+    }
+    
+    /* Add these styles for AQI indicator */
+    .aqi-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-weight: 500;
+      margin-top: 10px;
+    }
+    
+    .aqi-good {
+      background-color: #a8e05f;
+      color: #3c5a14;
+    }
+    
+    .aqi-fair {
+      background-color: #fdd64b;
+      color: #8a6d00;
+    }
+    
+    .aqi-moderate {
+      background-color: #ff9b57;
+      color: #a84400;
+    }
+    
+    .aqi-poor {
+      background-color: #fe6a69;
+      color: #a80100;
+    }
+    
+    .aqi-very-poor {
+      background-color: #a97abc;
+      color: #4c0472;
+    }
+    
+    .aqi-details {
+      margin-top: 10px;
+      padding: 10px;
+      background-color: #f9fafb;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    
+    /* Add these styles for AQI components */
+    .aqi-components {
+      margin-top: 15px;
+      padding: 10px;
+      background-color: #f5f7fa;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    
+    .aqi-component-title {
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    
+    .aqi-component-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+    
+    .aqi-component {
+      padding: 5px;
+      border-radius: 4px;
+      background-color: #ffffff;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+    
+    .aqi-component span {
+      font-weight: 500;
+      color: #4b5563;
+    }
+  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <div class="logo">
+          <i class="fas fa-city"></i>
+          <span>Smart City Platform</span>
+        </div>
+        <div class="subtitle">Weather Monitoring System</div>
+      </div>
+      <div class="nav-actions">
+        <a href="//" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+      </div>
+    </header>
+
+    <div class="weather-content">
+      <div class="card">
+        <div class="card-header">
+          <h2><i class="fas fa-cloud-sun"></i> Current Weather</h2>
+          <div class="location-display">
+            <i class="fas fa-map-marker-alt"></i>
+            <span id="current-location">Bhubaneswar</span>
+          </div>
+        </div>
+        <div class="card-content">
+          <div id="weather-display" class="loading">Loading weather data...</div>
+          
+          <div class="weather-details" id="weather-details" style="display: none;">
+            <div class="weather-detail">
+              <div><i class="fas fa-thermometer-half"></i></div>
+              <div><span id="temp">--</span>°C</div>
+              <div>Temperature</div>
+            </div>
+            <div class="weather-detail">
+              <div><i class="fas fa-tint"></i></div>
+              <div><span id="humidity">--</span>%</div>
+              <div>Humidity</div>
+            </div>
+            <div class="weather-detail">
+              <div><i class="fas fa-wind"></i></div>
+              <div><span id="wind">--</span> km/h</div>
+              <div>Wind Speed</div>
+            </div>
+            <div class="weather-detail" id="aqi-detail">
+              <div><i class="fas fa-lungs"></i></div>
+              <div><span id="aqi">--</span>/5</div>
+              <div>Air Quality</div>
+            </div>
+          </div>
+          
+          <form class="location-form" id="location-form">
+            <input type="text" class="location-input" id="location-input" placeholder="Enter city name...">
+            <button type="submit" class="search-btn"><i class="fas fa-search"></i> Change Location</button>
+          </form>
+        </div>
+      </div>
+      
+      <div class="card">
+        <div class="card-header">
+          <h3><i class="fas fa-bell"></i> SMS Notifications</h3>
+          <div class="twilio-badge">
+            <i class="fas fa-comment-dots"></i> Twilio Powered
+          </div>
+        </div>
+        <div class="card-content">
+          <div id="notification-status"></div>
+          
+          <form class="notification-form" id="notification-form">
+            <div class="form-group">
+              <label for="phone-number">Phone Number (with country code)</label>
+              <input type="tel" id="phone-number" placeholder="+91XXXXXXXXXX" pattern="^\+?[0-9]{10,15}$" required>
+              <small class="helper-text">Format: +91XXXXXXXXXX (+ followed by country code and number)</small>
+              <small class="helper-text">Example: +916370906519</small>
+            </div>
+            
+            <div class="form-group">
+              <label>Alert Types</label>
+              <div class="checkbox-group">
+                <label class="checkbox-label">
+                  <input type="checkbox" name="alert-type" value="severe" checked> Severe Weather Alerts
+                </label>
+                <label class="checkbox-label">
+                  <input type="checkbox" name="alert-type" value="daily"> Daily Weather Updates
+                </label>
+              </div>
+            </div>
+            
+            <button type="submit" class="submit-btn"><i class="fas fa-bell"></i> Subscribe to Alerts</button>
+          </form>
+        </div>
+      </div>
+      
+      <div class="card">
+        <div class="card-header">
+          <h3><i class="fas fa-history"></i> Recent Alerts</h3>
+        </div>
+        <div class="card-content">
+          <div id="alerts-history">
+            <p class="no-alerts">No recent alerts to display.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const weatherDisplay = document.getElementById('weather-display');
+      const weatherDetails = document.getElementById('weather-details');
+      const currentLocation = document.getElementById('current-location');
+      const locationForm = document.getElementById('location-form');
+      const locationInput = document.getElementById('location-input');
+      const notificationForm = document.getElementById('notification-form');
+      const phoneInput = document.getElementById('phone-number');
+      const notificationStatus = document.getElementById('notification-status');
+      const alertsHistory = document.getElementById('alerts-history');
+      
+      // Default location
+      let location = 'Bhubaneswar';
+      
+      // Fetch weather data
+      async function fetchWeather(locationName) {
+        weatherDisplay.innerHTML = '<div class="loading">Loading weather data...</div>';
+        weatherDetails.style.display = 'none';
+        
+        try {
+          const response = await fetch(`/weather/${encodeURIComponent(locationName)}`);
+          
+          if (!response.ok) {
+            throw new Error(`Failed to fetch weather data (${response.status})`);
+          }
+          
+          const data = await response.json();
+          console.log("Weather data received:", data);
+          
+          if (!data.success) {
+            throw new Error(data.error || 'Failed to fetch weather data');
+          }
+          
+          // Update UI with weather data
+          currentLocation.textContent = data.data.address;
+          document.getElementById('temp').textContent = Math.round(data.data.current.temp);
+          document.getElementById('humidity').textContent = data.data.current.humidity;
+          document.getElementById('wind').textContent = data.data.current.windspeed;
+          
+          // Update AQI if available
+          const aqiDetail = document.getElementById('aqi-detail');
+          const aqiElement = document.getElementById('aqi');
+          
+          if (data.data.current.aqi !== null && data.data.current.aqi !== undefined) {
+            aqiElement.textContent = data.data.current.aqi;
+            aqiDetail.style.display = 'block';
+          } else {
+            aqiDetail.style.display = 'none';
+          }
+          
+          // Get AQI class and description
+          let aqiClass = '';
+          let aqiDescription = '';
+          
+          if (data.data.current.aqi) {
+            switch(data.data.current.aqi) {
+              case 1: 
+                aqiClass = 'aqi-good';
+                aqiDescription = 'Air quality is good - perfect for outdoor activities!';
+                break;
+              case 2: 
+                aqiClass = 'aqi-fair';
+                aqiDescription = 'Air quality is fair - suitable for most outdoor activities.';
+                break;
+              case 3: 
+                aqiClass = 'aqi-moderate';
+                aqiDescription = 'Air quality is moderate - sensitive individuals should limit prolonged outdoor exertion.';
+                break;
+              case 4: 
+                aqiClass = 'aqi-poor';
+                aqiDescription = 'Air quality is poor - everyone should reduce outdoor activities.';
+                break;
+              case 5: 
+                aqiClass = 'aqi-very-poor';
+                aqiDescription = 'Air quality is very poor - avoid outdoor activities if possible.';
+                break;
+            }
+          }
+          
+          // Build main display content
+          let mainHtml = `
+            <div class="weather-main">
+              <div>
+                <div class="weather-temp">${Math.round(data.data.current.temp)}°C</div>
+                <div>Feels like ${Math.round(data.data.current.feelslike)}°C</div>
+              </div>
+              <div class="weather-condition">
+                <i class="${getWeatherIcon(data.data.current.conditions)}"></i>
+                <div>${data.data.current.conditions}</div>
+              </div>
+            </div>
+          `;
+          
+          // Add AQI container if data exists
+          if (data.data.current.aqi) {
+            mainHtml += `
+              <div class="aqi-container">
+                <div class="aqi-indicator ${aqiClass}">
+                  <i class="fas fa-lungs"></i>
+                  <span>Air Quality: ${data.data.current.aqiLevel} (${data.data.current.aqi}/5)</span>
+                </div>
+                <div class="aqi-details">
+                  ${aqiDescription}
+                </div>
+              `;
+            
+            // Add detailed components if available
+            if (data.data.current.aqiComponents) {
+              const comp = data.data.current.aqiComponents;
+              mainHtml += `
+                <div class="aqi-components">
+                  <div class="aqi-component-title">Pollutants:</div>
+                  <div class="aqi-component-grid">
+                    <div class="aqi-component"><span>PM2.5:</span> ${comp.pm2_5?.toFixed(1) || 'N/A'} μg/m³</div>
+                    <div class="aqi-component"><span>PM10:</span> ${comp.pm10?.toFixed(1) || 'N/A'} μg/m³</div>
+                    <div class="aqi-component"><span>O₃:</span> ${comp.o3?.toFixed(1) || 'N/A'} μg/m³</div>
+                    <div class="aqi-component"><span>NO₂:</span> ${comp.no2?.toFixed(1) || 'N/A'} μg/m³</div>
+                  </div>
+                </div>
+              `;
+            }
+            
+            mainHtml += `</div>`;
+          }
+          
+          weatherDisplay.innerHTML = mainHtml;
+          weatherDetails.style.display = 'grid';
+          
+          // Check for alerts
+          if (data.data.current.temp >= 35) {
+            notificationStatus.innerHTML = `
+              <div class="error">
+                <strong>High Temperature Alert!</strong>
+                <p>Temperature has reached ${Math.round(data.data.current.temp)}°C, which is considered dangerously high.</p>
+              </div>
+            `;
+          } else if (data.data.current.precip >= 10) {
+            notificationStatus.innerHTML = `
+              <div class="error">
+                <strong>Heavy Rain Alert!</strong>
+                <p>Heavy rainfall of ${data.data.current.precip}mm detected, which may cause localized flooding.</p>
+              </div>
+            `;
+          } else if (data.data.current.aqi >= 4) {
+            notificationStatus.innerHTML = `
+              <div class="error">
+                <strong>Poor Air Quality Alert!</strong>
+                <p>Air quality index is ${data.data.current.aqi}/5 (${data.data.current.aqiLevel}). Consider limiting outdoor activities.</p>
+              </div>
+            `;
+          }
+          
+        } catch (error) {
+          console.error('Error fetching weather:', error);
+          weatherDisplay.innerHTML = `
+            <div class="error">
+              <p>Error: ${error.message}</p>
+              <p>Please try another location or refresh the page.</p>
+            </div>
+          `;
+        }
+      }
+      
+      // Helper function to get weather icon class
+      function getWeatherIcon(condition) {
+        const conditions = condition ? condition.toLowerCase() : '';
+        
+        if (conditions.includes('clear') || conditions.includes('sunny')) {
+          return 'fas fa-sun';
+        } else if (conditions.includes('partly cloudy') || conditions.includes('partially cloudy')) {
+          return 'fas fa-cloud-sun';
+        } else if (conditions.includes('cloud')) {
+          return 'fas fa-cloud';
+        } else if (conditions.includes('rain')) {
+          return 'fas fa-cloud-rain';
+        } else if (conditions.includes('thunder')) {
+          return 'fas fa-bolt';
+        } else if (conditions.includes('snow')) {
+          return 'fas fa-snowflake';
+        } else if (conditions.includes('fog') || conditions.includes('mist')) {
+          return 'fas fa-smog';
+        } else {
+          return 'fas fa-cloud';
+        }
+      }
+      
+      // Handle location form submission
+      locationForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const newLocation = locationInput.value.trim();
+        
+        if (newLocation) {
+          location = newLocation;
+          fetchWeather(location);
+        }
+      });
+      
+      // Handle SMS notification form submission
+      notificationForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        let phone = phoneInput.value.trim();
+        const alertTypes = Array.from(document.querySelectorAll('input[name="alert-type"]:checked'))
+          .map(cb => cb.value);
+        
+        if (!phone) {
+          alert('Please enter a phone number');
+          return;
+        }
+        
+        // Ensure phone number has correct format with + prefix
+        if (!phone.startsWith('+')) {
+          phone = '+' + phone;
+        }
+        
+        // Remove any spaces or non-digit characters except leading +
+        phone = '+' + phone.substring(1).replace(/[^\d]/g, '');
+        
+        console.log("Formatted phone number:", phone);
+        
+        if (alertTypes.length === 0) {
+          alert('Please select at least one alert type');
+          return;
+        }
+        
+        notificationStatus.innerHTML = '<div class="loading">Sending SMS notification...</div>';
+        
+        try {
+          console.log("Preparing to send SMS to:", phone);
+          
+          // Create a more interactive message with current weather and air quality data
+          const temp = document.getElementById('temp').textContent;
+          const humidity = document.getElementById('humidity').textContent;
+          const wind = document.getElementById('wind').textContent;
+          const aqi = document.getElementById('aqi').textContent;
+          const aqiInfo = aqi !== '--' ? 
+            `🌬️ Air Quality: ${aqi}/5 (${getAQILevelText(parseInt(aqi))})
+${getAQIRecommendationText(parseInt(aqi))}` : '';
+          
+          const message = `🌦️ WEATHER UPDATE 🌦️
+📍 ${currentLocation.textContent}
+${new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
+
+🌡️ Temp: ${temp}°C
+💧 Humidity: ${humidity}%
+💨 Wind: ${wind} km/h
+${aqiInfo ? aqiInfo : ''}
+
+Stay safe and have a great day! 🌈`;
+          
+          console.log("Message content:", message);
+          console.log("Making fetch request to /send-sms");
+          
+          const requestData = {
+            to: phone,
+            message: message,
+            twilioConfig: {
+              accountSid: 'AC822c6fcb8c3391afcf346e105a024470',
+              authToken: '0723b902cd5b20285f47483b42f589f8',
+              phoneNumber: '+17854654324'
+            }
+          };
+          
+          console.log("Request data:", JSON.stringify(requestData));
+          
+          const response = await fetch('/send-sms', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestData)
+          });
+          
+          console.log("Fetch response status:", response.status);
+          const data = await response.json();
+          console.log("Response data:", data);
+          
+          if (data.success) {
+            notificationStatus.innerHTML = `
+              <div class="success">
+                <p>✓ SMS sent successfully to ${phone}!</p>
+                <p>Message ID: ${data.sid || 'N/A'}</p>
+              </div>
+            `;
+            
+            // Update alerts history
+            const now = new Date().toLocaleTimeString();
+            alertsHistory.innerHTML = `
+              <div class="alert-item">
+                <div><strong>${now}</strong></div>
+                <div>SMS sent to ${phone}</div>
+                <div>${message.replace(/\n/g, '<br>')}</div>
+              </div>
+            ` + alertsHistory.innerHTML;
+            
+          } else {
+            throw new Error(data.error || 'Failed to send SMS');
+          }
+        } catch (error) {
+          console.error('Error sending SMS:', error);
+          notificationStatus.innerHTML = `
+            <div class="error">
+              <p>⚠ Error sending SMS: ${error.message}</p>
+              <p>Please check your phone number format and try again.</p>
+              <div>Make sure the phone number is in E.164 format: +[country code][number]</div>
+              <div>For example: +916370906519</div>
+            </div>
+          `;
+        }
+      });
+      
+      // Initial weather fetch
+      fetchWeather(location);
+      
+      // Set up monitoring with the current location
+      async function setupMonitoring() {
+        try {
+          await fetch('/setup-monitoring', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              location: location,
+              phoneNumber: phoneInput.value || null
+            })
+          });
+        } catch (error) {
+          console.error('Error setting up monitoring:', error);
+        }
+      }
+      
+      // Set up monitoring on page load
+      setupMonitoring();
+    });
+
+    // Helper functions for AQI text
+    function getAQILevelText(aqi) {
+      switch(aqi) {
+        case 1: return "Good";
+        case 2: return "Fair";
+        case 3: return "Moderate";
+        case 4: return "Poor";
+        case 5: return "Very Poor";
+        default: return "Unknown";
+      }
+    }
+
+    function getAQIRecommendationText(aqi) {
+      switch(aqi) {
+        case 1: return "Air quality is good - perfect for outdoor activities!";
+        case 2: return "Air quality is fair - suitable for most outdoor activities.";
+        case 3: return "Air quality is moderate - sensitive individuals should limit prolonged outdoor exertion.";
+        case 4: return "Air quality is poor - everyone should reduce outdoor activities.";
+        case 5: return "Air quality is very poor - avoid outdoor activities if possible.";
+        default: return "";
+      }
+    }
+  </script>
+</body>
+</html> 

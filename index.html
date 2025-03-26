@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart City Mobility Platform</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">
+        <i class="fas fa-city"></i>
+        <span>Smart City Platform</span>
+      </div>
+      <div class="subtitle">Intelligent urban mobility solutions</div>
+      <div class="nav-tabs">
+        <button class="tab-btn active" data-tab="traffic"><i class="fas fa-road"></i> Traffic</button>
+        <button class="tab-btn" data-tab="emergency"><i class="fas fa-ambulance"></i> Emergency</button>
+        <button class="tab-btn" data-tab="weather"><i class="fas fa-cloud-sun"></i> Weather Monitoring</button>
+      </div>
+    </header>
+
+    <div class="main-content">
+      <div class="map-container">
+        <div id="map"></div>
+        <div class="map-controls">
+          <div class="search-box">
+            <input type="text" id="cityInput" placeholder="Search location..." />
+            <button onclick="fetchTrafficData()" class="search-btn"><i class="fas fa-search"></i></button>
+          </div>
+          <button onclick="getUserLocation()" class="location-btn"><i class="fas fa-location-arrow"></i><span>My Location</span></button>
+        </div>
+
+      </div>
+
+      <div class="sidebar">
+        <div class="tab-content active" id="traffic-tab">
+          <div class="module-header">
+            <h2><i class="fas fa-chart-line"></i> Mobility Analytics</h2>
+            <div class="module-actions">
+              <button class="action-btn" title="Export data"><i class="fas fa-download"></i></button>
+              <button class="action-btn" title="Settings"><i class="fas fa-cog"></i></button>
+            </div>
+          </div>
+
+          <div class="card" id="mobility-status">
+            <div class="card-header">
+              <h3>Road Status</h3>
+              <span class="time-indicator">Live</span>
+            </div>
+            <div class="card-content" id="road-status-list">
+              <div class="loading">Loading road statuses...</div>
+            </div>
+          </div>
+
+          <div class="card" id="mobility-prediction">
+            <div class="card-header">
+              <h3>Future Mobility</h3>
+              <div class="time-selector">
+                <button class="time-btn active" data-time="30">30m</button>
+              </div>
+            </div>
+            <div class="card-content">
+              <div class="prediction-display">
+                <div class="prediction-bar-container">
+                  <div class="prediction-bar"></div>
+                </div>
+                <div class="prediction-value">--</div>
+              </div>
+              <div class="actions-panel">
+                <button class="action-pill" data-action="suggest-routes"><i class="fas fa-route"></i> Suggest Routes</button>
+                <button class="action-pill" data-action="reschedule"><i class="fas fa-clock"></i> Reschedule</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" id="location-info">
+            <div class="card-header">
+              <h3>Location Details</h3>
+            </div>
+            <div class="card-content">
+              <div class="info-row">
+                <span class="info-label">Area:</span>
+                <span class="area-value info-value">--</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Primary Road:</span>
+                <span class="road-value info-value">--</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-content" id="emergency-tab">
+          <div class="module-header"><h2><i class="fas fa-ambulance"></i> Emergency Response</h2></div>
+          <div class="placeholder-content"><p>Emergency response integration coming soon.</p><button class="placeholder-btn">Enable Emergency Mode</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

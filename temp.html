@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        input { padding: 10px; margin: 10px; }
+        button { padding: 10px; cursor: pointer; }
+        .weather-info { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h2>Current Weather</h2>
+    <input type="text" id="city" placeholder="Enter city name" />
+    <button onclick="getWeather()">Get Weather</button>
+    <div class="weather-info" id="weather"></div>
+
+    <script>
+        async function getWeather() {
+            const city = document.getElementById('city').value;
+            const apiKey = 'KFA9HDC29C5HSUQKYDZT5CLN4'; // Replace with your Visual Crossing API key
+            const url = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${city}/today?unitGroup=metric&key=${apiKey}&contentType=json`;
+            
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                if (data.days && data.days.length > 0) {
+                    const weather = data.days[0];
+                    document.getElementById('weather').innerHTML = `
+                        <h3>Weather in ${city}</h3>
+                        <p>Temperature: ${weather.temp}°C</p>
+                        <p>Humidity: ${weather.humidity}%</p>
+                        <p>Condition: ${weather.conditions}</p>
+                    `;
+                } else {
+                    document.getElementById('weather').innerHTML = '<p>Weather data not found.</p>';
+                }
+            } catch (error) {
+                document.getElementById('weather').innerHTML = '<p>Error fetching data. Check city name or API key.</p>';
+            }
+        }
+    </script>
+</body>
+</html>
